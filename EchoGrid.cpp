@@ -113,3 +113,20 @@ int main() {
     setConsoleColor(COLOR_WHITE);
     std::cout << "\nPress Enter to start the game...";
     std::cin.get();
+
+    // --- Main Game Loop ---
+    while (true) {
+        clearScreen();
+        printBoard(board);
+
+        // --- Announce Turn ---
+        char currentSymbol = (currentPlayer == 1) ? P1_SYMBOL : P2_SYMBOL;
+        if (currentPlayer == 1) {
+            setConsoleColor(COLOR_BLUE);
+            std::cout << "Blue Side's Turn (" << currentSymbol << ")\n";
+        }
+        else {
+            setConsoleColor(COLOR_RED);
+            std::cout << "Red Side's Turn (" << currentSymbol << ")\n";
+        }
+        setConsoleColor(COLOR_WHITE);
