@@ -1,12 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <cstdlib>
-#include <ctime>
-#include <windows.h>
-#include <limits>
-#include <thread>
-#include <chrono>
+#include <cstdlib> // For rand() and srand()
+#include <ctime>   // For time()
+#include <windows.h> // For console colors and Sleep()
+#include <limits>  // For numeric_limits
+#include <thread>  // For this_thread::sleep_for
+#include <chrono>  // For milliseconds
 
 // --- Console Color Constants ---
 const int COLOR_BLUE = 9;
@@ -14,13 +14,13 @@ const int COLOR_RED = 12;
 const int COLOR_WHITE = 15;
 const int COLOR_YELLOW = 14;
 const int COLOR_GREEN = 10;
-const int COLOR_GREY = 0;
+const int COLOR_GREY = 8;
 
 // --- Player Symbol Constants ---
 const char P1_SYMBOL = 'X';
 const char P2_SYMBOL = 'O';
 
-// --- Player Prototypes ---
+// --- Function Prototypes ---
 void setConsoleColor(int color);
 void printTitle();
 void printBoard(const std::vector<char>& board);
@@ -31,20 +31,20 @@ bool checkWin(const std::vector<char>& board, char playerSymbol);
 bool checkDraw(const std::vector<char>& board);
 
 int main() {
-	// Seed the random number generator
-	srand(static_cast<unsigned int>(time(0)));
+    // Seed the random number generator
+    srand(static_cast<unsigned int>(time(0)));
 
-	std::vector<char> board = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-	int currentPlayer = 1;
+    std::vector<char> board = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    int currentPlayer = 1;
 
-	printTitle();
-	std::cout << "\n\n";
-	setConsoleColor(COLOR_WHITE);
-	std::cout << " Welcome to the EchoGrid. Where every move can echo into victory... or defeat. \n";
-	std::cout << " The rules are different here. Victory requires luck, guts, and strategy.\n\n";
-	std::cout << " Press Enter to see the rules...";
-	std::cin.get();
-    
+    printTitle();
+    std::cout << "\n\n";
+    setConsoleColor(COLOR_WHITE
+        std::cout << " Welcome to the EchoGrid. Where every move can echo into victory... or defeat.\n";
+    std::cout << " The rules are different here. Victory requires luck, guts, and strategy.\n\n";
+    std::cout << " Press Enter to see the rules...";
+    std::cin.get();
+
     // --- Rule Explanation ---
     clearScreen();
     setConsoleColor(COLOR_YELLOW);
@@ -130,3 +130,68 @@ int main() {
             std::cout << "Red Side's Turn (" << currentSymbol << ")\n";
         }
         setConsoleColor(COLOR_WHITE);
+
+        // --- Coin Toss Mechanic ---
+        std::cout << "First, the coin toss. Call it! (1 for Heads, 2 for Tails): ";
+        int coinCall;
+        while (!(std::cin >> coinCall) || (coinCall != 1 && coinCall != 2)) {
+            std::cout << "Invalid choice. Please enter 1 for Heads or 2 for Tails: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+        int coinResult = rand() % 2 + 1;
+        std::cout << "Flipping the coin...";
+        pause(2000);
+        std::cout << " It's " << (coinResult == 1 ? "Heads!" : "Tails!") << "\n\n";
+
+        bool powerTurn = (coinCall == coinResult);
+        bool turnSkipped = false;
+
+        if (powerTurn) {
+            setConsoleColor(COLOR_GREEN);
+            std::cout << "You won the toss! It's a POWER TURN!\n";
+            setConsoleColor(COLOR_WHITE);
+            std::cout << "Choose your action:\n";
+            std::cout << "1. Place your mark on an empty square.\n";
+            std::cout << "2. Conquer an opponent's square.\n";
+            std::cout << "Your choice: ";
+            int action;
+            while (!(std::cin >> action) || (action != 1 && action != 2)) {
+                std::cout << "Invalid choice. Please enter 1 to Place or 2 to Conquer: ";
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+
+            if (action == 1) { // Place
+                std::cout << "Choose an empty square (1-9): ";
+                int move = getValidInput(board, true);
+                board[move - 1] = currentSymbol;
+            }
+            else { // Conquer
+                std::cout << "Choose an opponent's square to CONQUER (1-9): ";
+                int move = getValidInput(board, false); // Get any valid number
+                char opponentSymbol = (currentPlayer == 1) ? P2_SYMBOL : P1_SYMBOL;
+                if (board[move - 1] == opponentSymbol) {
+                    board[move - 1] = currentSymbol;
+                    setConsoleColor(COLOR_GREEN);
+                    std::cout << "\nSuccess! The square has been conquered!\n";
+                    pause(2000);
+                }
+                else {
+                    setConsoleColor(COLOR_RED);
+                    std::cout << "\nInvalid target! That square doesn't belong to your opponent.\n";
+                    std::cout << "Your turn is forfeited!\n";
+                    turnSkipped = true;
+                    pause(2500);
+                }
+            }
+        }
+        else {
+            setConsoleColor(COLOR_YELLOW);
+            std::cout << "You lost the toss. It's a normal turn.\n";
+            setConsoleColor(COLOR_WHITE);
+            std::cout << "Choose an empty square to place your mark (1-9): ";
+            int move = getValidInput(board, true);
+            board[move - 1] = currentSymbol;
+        }
