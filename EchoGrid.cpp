@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdlib> // For rand() and srand()
 #include <ctime>   // For time()
+#define NOMINMAX   // This is the FIX: It prevents windows.h from defining min() and max() macros
 #include <windows.h> // For console colors and Sleep()
 #include <limits>  // For numeric_limits
 #include <thread>  // For this_thread::sleep_for
@@ -39,8 +40,8 @@ int main() {
 
     printTitle();
     std::cout << "\n\n";
-    setConsoleColor(COLOR_WHITE
-        std::cout << " Welcome to the EchoGrid. Where every move can echo into victory... or defeat.\n";
+    setConsoleColor(COLOR_WHITE);
+    std::cout << " Welcome to the EchoGrid. Where every move can echo into victory... or defeat.\n";
     std::cout << " The rules are different here. Victory requires luck, guts, and strategy.\n\n";
     std::cout << " Press Enter to see the rules...";
     std::cin.get();
@@ -65,6 +66,7 @@ int main() {
     setConsoleColor(COLOR_YELLOW);
     std::cout << "===========================================================================\n\n";
     std::cout << "Press Enter to begin the showdown...";
+    // This line was causing an error. We need to clear the input buffer before waiting for the next Enter.
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cin.get();
 
@@ -224,7 +226,7 @@ int main() {
     }
 
     setConsoleColor(COLOR_WHITE);
-    std::cout << "\n\nThanks for playing EchGrid!\n";
+    std::cout << "\n\nThanks for playing EchoGrid!\n";
     return 0;
 }
 
@@ -305,8 +307,12 @@ int getValidInput(const std::vector<char>& board, bool isEmptyRequired) {
         }
         else if (isEmptyRequired && (board[move - 1] == 'X' || board[move - 1] == 'O')) {
             std::cout << "That square is already taken. Choose an empty one: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         else {
+            // Clear the input buffer after a successful read to prevent issues on the next turn.
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return move;
         }
     }
@@ -330,3 +336,4 @@ bool checkDraw(const std::vector<char>& board) {
     }
     return true;
 }
+
