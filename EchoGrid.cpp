@@ -239,3 +239,94 @@ void printTitle() {
     clearScreen();
     setConsoleColor(COLOR_YELLOW);
     std::cout << R"(
+  _______ ______ _    _  _____   ______ _____ __   __ ______ 
+ |__   __|  ____| |  | |/ ____| |  ____/ ____|  \ |  |  ____|
+    | |  | |__  | |__| | |  __  | |__ | |  __| \ \|  | |__   
+    | |  |  __| |  __  | | |_ | |  __|| | |_ | |\   |  __|  
+    | |  | |____| |  | | |__| | | |___| |__| | | \  | |____ 
+    |_|  |______|_|  |_|\_____| |______\_____|_|  \_|______|
+                                                          
+)" << '\n';
+}
+
+void printBoard(const std::vector<char>& board) {
+    setConsoleColor(COLOR_WHITE);
+    std::cout << "\n     |     |     \n";
+    std::cout << "  ";
+    for (int i = 0; i < 3; ++i) {
+        if (board[i] == P1_SYMBOL) setConsoleColor(COLOR_BLUE);
+        else if (board[i] == P2_SYMBOL) setConsoleColor(COLOR_RED);
+        else setConsoleColor(COLOR_GREY);
+        std::cout << board[i];
+        setConsoleColor(COLOR_WHITE);
+        if (i < 2) std::cout << "  |  ";
+    }
+    std::cout << "\n_____|_____|_____\n";
+    std::cout << "     |     |     \n";
+    std::cout << "  ";
+    for (int i = 3; i < 6; ++i) {
+        if (board[i] == P1_SYMBOL) setConsoleColor(COLOR_BLUE);
+        else if (board[i] == P2_SYMBOL) setConsoleColor(COLOR_RED);
+        else setConsoleColor(COLOR_GREY);
+        std::cout << board[i];
+        setConsoleColor(COLOR_WHITE);
+        if (i < 5) std::cout << "  |  ";
+    }
+    std::cout << "\n_____|_____|_____\n";
+    std::cout << "     |     |     \n";
+    std::cout << "  ";
+    for (int i = 6; i < 9; ++i) {
+        if (board[i] == P1_SYMBOL) setConsoleColor(COLOR_BLUE);
+        else if (board[i] == P2_SYMBOL) setConsoleColor(COLOR_RED);
+        else setConsoleColor(COLOR_GREY);
+        std::cout << board[i];
+        setConsoleColor(COLOR_WHITE);
+        if (i < 8) std::cout << "  |  ";
+    }
+    std::cout << "\n     |     |     \n\n";
+}
+
+void clearScreen() {
+    system("cls");
+}
+
+void pause(int milliseconds) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+}
+
+int getValidInput(const std::vector<char>& board, bool isEmptyRequired) {
+    int move;
+    while (true) {
+        std::cin >> move;
+        if (std::cin.fail() || move < 1 || move > 9) {
+            std::cout << "Invalid input. Please enter a number between 1 and 9: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        else if (isEmptyRequired && (board[move - 1] == 'X' || board[move - 1] == 'O')) {
+            std::cout << "That square is already taken. Choose an empty one: ";
+        }
+        else {
+            return move;
+        }
+    }
+}
+
+bool checkWin(const std::vector<char>& board, char playerSymbol) {
+    const int wins[8][3] = { {0,1,2}, {3,4,5}, {6,7,8}, {0,3,6}, {1,4,7}, {2,5,8}, {0,4,8}, {2,4,6} };
+    for (int i = 0; i < 8; ++i) {
+        if (board[wins[i][0]] == playerSymbol && board[wins[i][1]] == playerSymbol && board[wins[i][2]] == playerSymbol) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool checkDraw(const std::vector<char>& board) {
+    for (char c : board) {
+        if (c != 'X' && c != 'O') {
+            return false;
+        }
+    }
+    return true;
+}
