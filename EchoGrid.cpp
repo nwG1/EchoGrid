@@ -195,3 +195,26 @@ int main() {
             int move = getValidInput(board, true);
             board[move - 1] = currentSymbol;
         }
+
+        // --- Check for Game Over ---
+        if (!turnSkipped && checkWin(board, currentSymbol)) {
+            clearScreen();
+            printBoard(board);
+            if (currentPlayer == 1) {
+                setConsoleColor(COLOR_BLUE);
+                std::cout << "\nBLUE SIDE IS VICTORIOUS!\n";
+            }
+            else {
+                setConsoleColor(COLOR_RED);
+                std::cout << "\nRED SIDE IS VICTORIOUS!\n";
+            }
+            break;
+        }
+
+        if (checkDraw(board)) {
+            clearScreen();
+            printBoard(board);
+            setConsoleColor(COLOR_YELLOW);
+            std::cout << "\nTHE BOARD IS FULL! THE BATTLE ENDS IN A DRAW!\n";
+            break;
+        }
