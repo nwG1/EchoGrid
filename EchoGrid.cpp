@@ -9,7 +9,6 @@
 #include <chrono>
 
 // --- Console Color Constants ---
-// A little flair to match the player sides
 const int COLOR_BLUE = 9;
 const int COLOR_RED = 12;
 const int COLOR_WHITE = 15;
@@ -69,3 +68,48 @@ int main() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cin.get();
 
+    // --- Starting Dice Roll ---
+    clearScreen();
+    std::cout << "Let's see who goes first. The dice will decide!\n";
+    pause(2000);
+
+    int p1_roll, p2_roll;
+    do {
+        std::cout << "\nPlayer 1 (";
+        setConsoleColor(COLOR_BLUE);
+        std::cout << "Blue Side";
+        setConsoleColor(COLOR_WHITE);
+        std::cout << ") is rolling...";
+        pause(1500);
+        p1_roll = rand() % 6 + 1;
+        std::cout << " a " << p1_roll << "!\n";
+
+        std::cout << "Player 2 (";
+        setConsoleColor(COLOR_RED);
+        std::cout << "Red Side";
+        setConsoleColor(COLOR_WHITE);
+        std::cout << ") is rolling...";
+        pause(1500);
+        p2_roll = rand() % 6 + 1;
+        std::cout << " a " << p2_roll << "!\n\n";
+
+        if (p1_roll > p2_roll) {
+            currentPlayer = 1;
+            setConsoleColor(COLOR_BLUE);
+            std::cout << "Blue Side wins the roll and will go first!\n";
+        }
+        else if (p2_roll > p1_roll) {
+            currentPlayer = 2;
+            setConsoleColor(COLOR_RED);
+            std::cout << "Red Side wins the roll and will go first!\n";
+        }
+        else {
+            setConsoleColor(COLOR_YELLOW);
+            std::cout << "It's a tie! Let's roll again to be sure.\n";
+            pause(2000);
+        }
+    } while (p1_roll == p2_roll);
+
+    setConsoleColor(COLOR_WHITE);
+    std::cout << "\nPress Enter to start the game...";
+    std::cin.get();
