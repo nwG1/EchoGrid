@@ -218,3 +218,24 @@ int main() {
             std::cout << "\nTHE BOARD IS FULL! THE BATTLE ENDS IN A DRAW!\n";
             break;
         }
+
+        // --- Switch Player ---
+        currentPlayer = (currentPlayer == 1) ? 2 : 1;
+    }
+
+    setConsoleColor(COLOR_WHITE);
+    std::cout << "\n\nThanks for playing EchGrid!\n";
+    return 0;
+}
+
+// --- Function Definitions ---
+
+void setConsoleColor(int color) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, color);
+}
+
+void printTitle() {
+    clearScreen();
+    setConsoleColor(COLOR_YELLOW);
+    std::cout << R"(
